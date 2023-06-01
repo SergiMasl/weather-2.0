@@ -38,6 +38,7 @@ body {
     border-radius: 30px;
     flex: 1;
     font-size: 18px;
+    margin-right: 10px;
 }
 
 .card_conteiner button {
