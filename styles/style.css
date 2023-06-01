@@ -160,7 +160,7 @@ body {
     .col {
         flex-direction: column;
     }
-    col img {
+    .col img {
         width: 25px;
         margin-bottom: 15px;
     }
