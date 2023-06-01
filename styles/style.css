@@ -78,9 +78,22 @@ body {
     margin-top: 30px;
 }
 
-.wether_wrap h1{
+.temp_wrap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wether_wrap h1, .inFocus {
     font-size: 80px;
     font-weight: 500;
+    color: white;
+}
+
+.nonFocus{
+    font-size: 50px;
+    font-weight: 300;
+    color: rgb(213, 211, 211);
 }
 
 .wether_wrap h2{

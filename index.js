@@ -5,7 +5,16 @@ const searchBox = document.querySelector(".city_search input");
 const searchBtn = document.querySelector(".city_search button");
 const citySelect = document.querySelector(".cityList");
 const weatherIcon = document.querySelector(".weatehr_icon");
+const tempF = document.querySelector(".tempF");
+const tempC = document.querySelector(".tempC");
 let cityArr = [];
+let metricObj = {
+  temper: 0,
+  speed: 0,
+  isMetric: false,
+  currentWeatherData: {},
+  speedSymble: "mph",
+};
 
 //get api list of city
 async function getCities(cityName) {
@@ -61,20 +70,60 @@ async function getWeather(value) {
   );
 
   document.querySelector(".wether_wrap").style.display = "block";
-  let data = await res.json();
+  metricObj.currentWeatherData = await res.json();
 
-  document.querySelector(".city").innerHTML = data.name;
+  impire();
+  getCurrentWeatherData();
+}
 
-  document.querySelector(".temp").innerHTML =
-    Math.round(Math.round(data.main.temp * 1.8 - 459.67)) + "F";
-  document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+function getCurrentWeatherData() {
+  document.querySelector(".city").innerHTML = metricObj.currentWeatherData.name;
+
+  document.querySelector(".temp").innerHTML = metricObj.temper;
+  document.querySelector(".humidity").innerHTML =
+    metricObj.currentWeatherData.main.humidity + "%";
   document.querySelector(".wind").innerHTML =
-    (data.wind.speed / 1.609344).toFixed(2) + " Mph";
-  console.log(data.weather[0].main);
-  console.log(weatherIcon);
-  weatherIcon.src = `styles/images/${data.weather[0].main}.png`;
+    metricObj.speed + metricObj.speedSymble;
+  weatherIcon.src = `styles/images/${metricObj.currentWeatherData.weather[0].main}.png`;
 }
 
 citySelect.addEventListener("change", (event) =>
   getWeather(event.target.value)
 );
+tempF.addEventListener("click", () => {
+  metricObj.isMetric = false;
+  impire();
+  getCurrentWeatherData();
+});
+tempC.addEventListener("click", () => {
+  metricObj.isMetric = true;
+  impire();
+  getCurrentWeatherData();
+});
+
+function impire() {
+  if (!metricObj.isMetric) {
+    tempF.classList.remove("nonFocus");
+    tempF.classList.add("inFocus");
+    tempC.classList.remove("inFocus");
+    tempC.classList.add("nonFocus");
+    metricObj.temper = Math.round(
+      Math.round(metricObj.currentWeatherData.main.temp * 1.8 - 459.67)
+    );
+    metricObj.speed = metricObj.currentWeatherData.wind.speed.toFixed(2);
+    metricObj.speedSymble = "mph";
+  } else {
+    tempC.classList.remove("nonFocus");
+    tempC.classList.add("inFocus");
+    tempF.classList.remove("inFocus");
+    tempF.classList.add("nonFocus");
+    metricObj.temper = Math.round(
+      Math.round(metricObj.currentWeatherData.main.temp - 273.15)
+    );
+    metricObj.speed = (
+      metricObj.currentWeatherData.wind.speed * 1.609344
+    ).toFixed(2);
+    metricObj.speedSymble = "km/h";
+  }
+  return metricObj;
+}
