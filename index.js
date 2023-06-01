@@ -64,7 +64,8 @@ async function getWeather(value) {
   document.querySelector(".temp").innerHTML =
     Math.round(Math.round(data.main.temp * 1.8 - 459.67)) + "F";
   document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
-  document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+  document.querySelector(".wind").innerHTML =
+    (data.wind.speed / 1.609344).toFixed(2) + " Mph";
   console.log(data.weather[0].main);
   console.log(weatherIcon);
   weatherIcon.src = `styles/images/${data.weather[0].main}.png`;

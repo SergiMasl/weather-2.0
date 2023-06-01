@@ -52,11 +52,6 @@ body {
     transition: width 0.3s ease;
 }
 
-/* .card_conteiner button:hover {
-    width: 100%;
-    border-radius: 30px;
-} */
-
 .hide {
     display: none;
 }
@@ -116,4 +111,46 @@ body {
     font-size: 14px;
     color: red;
     margin-top: 10px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .card_conteiner {
+        width: 99%;
+        margin: 10px auto 0;
+        max-width: 550px;
+    }
+    .city_search {
+        flex-direction: column;
+    }
+    .card_conteiner input{
+        margin-right: 0;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .card_conteiner button:hover {
+        width: 30%;
+        border-radius: 30px;
+    }
+    .weatehr_icon {
+        width: 150px;
+        margin-top: 20px;
+    }
+    .wether_wrap h1 {
+        font-size: 50px;
+    }
+    .wether_wrap h2 {
+        font-size: 30px;
+        font-weight: 400;
+        margin-top: 0px;
+    }
+    .weather_details {
+        margin-top: 30px;
+    }
+    col img {
+        width: 25px;
+    }
+    .humidity, .wind {
+        font-size: 20px;
+    }
 }
