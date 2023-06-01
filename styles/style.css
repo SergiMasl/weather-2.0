@@ -162,6 +162,13 @@ body {
     .wether_wrap h1 {
         font-size: 50px;
     }
+    .inFocus {
+        font-size: 50px;
+    }
+    
+    .nonFocus{
+        font-size: 25px;
+    }
     .wether_wrap h2 {
         font-size: 30px;
         font-weight: 400;
