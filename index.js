@@ -32,7 +32,11 @@ async function getCities(cityName) {
       cityOption.value = i.place_id;
       return cityOption;
     });
-    citySelect.append(...options);
+    const firstOption = document.createElement("option");
+    firstOption.textContent = "choose your option";
+    firstOption.value = "disabled";
+    citySelect.append(firstOption, ...options);
+    firstOption.disabled = true;
   }
 }
 

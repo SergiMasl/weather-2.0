@@ -14,7 +14,7 @@ body {
     max-width: 470px;
     background: linear-gradient(135deg, #00feba, #5b548a);
     color: #fff;
-    margin: 100px auto 0;
+    margin: 50px auto 0;
     border-radius: 20px;
     padding: 40px 35px;
     text-align: center;
@@ -51,6 +51,15 @@ body {
     cursor: pointer;
     transition: width 0.3s ease;
 }
+
+.cityList {
+    width: 100%;
+    padding: 8px 5px;
+    border: none;
+    border-radius: 5px;
+    font-size: 17px;
+}
+
 
 .hide {
     display: none;
@@ -116,9 +125,10 @@ body {
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
     .card_conteiner {
-        width: 99%;
+        width: 95%;
         margin: 10px auto 0;
         max-width: 550px;
+        margin: 10px auto 0;
     }
     .city_search {
         flex-direction: column;
