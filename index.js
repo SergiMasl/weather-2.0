@@ -7,6 +7,7 @@ const citySelect = document.querySelector(".cityList");
 const weatherIcon = document.querySelector(".weatehr_icon");
 const tempF = document.querySelector(".tempF");
 const tempC = document.querySelector(".tempC");
+const errorText = document.querySelector(".error");
 let cityArr = [];
 let metricObj = {
   temper: 0,
@@ -24,29 +25,43 @@ async function getCities(cityName) {
   citySelect.classList.add("hide");
   citySelect.innerHTML = "";
 
-  //get api
-  const res = await fetch(apiUrlCity + cityName);
-  cityArr = await res.json();
+  await fetch(apiUrlCity + cityName)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      }
+      throw new Error("Something went wrong");
+    })
+    .then((resJson) => {
+      cityArr = resJson;
+      if (cityArr.length < 1 || cityArr == undefined) {
+        errorText.style.display = "block";
+        errorText.textContent = "Invalide city name :/";
+      } else {
+        citySelect.classList.remove("hide");
+        document.querySelector(".error").style.display = "none";
 
-  if (cityArr.length < 1 || cityArr == undefined) {
-    document.querySelector(".error").style.display = "block";
-  } else {
-    citySelect.classList.remove("hide");
-    document.querySelector(".error").style.display = "none";
-
-    //creating select list
-    const options = cityArr.map((i) => {
-      let cityOption = document.createElement("option");
-      cityOption.textContent = i.display_name;
-      cityOption.value = i.place_id;
-      return cityOption;
+        //creating select list
+        const options = cityArr.map((i) => {
+          let cityOption = document.createElement("option");
+          cityOption.textContent = i.display_name;
+          cityOption.value = i.place_id;
+          return cityOption;
+        });
+        const firstOption = document.createElement("option");
+        firstOption.textContent = "choose your option";
+        firstOption.value = "disabled";
+        citySelect.append(firstOption, ...options);
+        firstOption.disabled = true;
+      }
+    })
+    .catch((error) => {
+      errorText.style.display = "block";
+      errorText.textContent = "No server connection :/ ";
+      console.error(error);
     });
-    const firstOption = document.createElement("option");
-    firstOption.textContent = "choose your option";
-    firstOption.value = "disabled";
-    citySelect.append(firstOption, ...options);
-    firstOption.disabled = true;
-  }
+
+  console.log();
 }
 
 searchBtn.addEventListener("click", () => {
@@ -65,15 +80,26 @@ async function getWeather(value) {
   let newCity = cityArr.find((i) => i.place_id == value);
 
   //get api
-  const res = await fetch(
+  await fetch(
     apiUrlWeather + `lat=${newCity.lat}&lon=${newCity.lon}&appid=${apiKey}`
-  );
+  )
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      }
+    })
+    .then((resJson) => {
+      metricObj.currentWeatherData = resJson;
+      document.querySelector(".wether_wrap").style.display = "block";
 
-  document.querySelector(".wether_wrap").style.display = "block";
-  metricObj.currentWeatherData = await res.json();
-
-  impire();
-  getCurrentWeatherData();
+      impire();
+      getCurrentWeatherData();
+    })
+    .catch((err) => {
+      errorText.style.display = "block";
+      errorText.textContent = "No server connection :/ ";
+      console.error(err);
+    });
 }
 
 function getCurrentWeatherData() {
