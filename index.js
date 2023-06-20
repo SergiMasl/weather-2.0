@@ -1,12 +1,12 @@
-const apiUrlCity = "https://geocode.maps.co/search?q=";
+const apiCityUrl = "https://geocode.maps.co/search?q=";
 const apiKey = "f859181aacc9bfc8d84224bf2a6afef0";
-const apiUrlWeather = "https://api.openweathermap.org/data/2.5/weather?";
+const apiWeatherUrl = "https://api.openweathermap.org/data/2.5/weather?";
 const searchBox = document.querySelector(".city_search input");
 const searchBtn = document.querySelector(".city_search button");
 const citySelect = document.querySelector(".cityList");
 const weatherIcon = document.querySelector(".weatehr_icon");
-const tempF = document.querySelector(".tempF");
-const tempC = document.querySelector(".tempC");
+const temperatureFarengate = document.querySelector(".temperatureFarengate");
+const temperatureCelcium = document.querySelector(".temperatureCelcium");
 const errorText = document.querySelector(".error");
 let cityArr = [];
 let metricObj = {
@@ -25,43 +25,38 @@ async function getCities(cityName) {
   citySelect.classList.add("hide");
   citySelect.innerHTML = "";
 
-  await fetch(apiUrlCity + cityName)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      }
+  try {
+    const res = await fetch(apiCityUrl + cityName);
+    if (res.status != 200) {
       throw new Error("Something went wrong");
-    })
-    .then((resJson) => {
-      cityArr = resJson;
-      if (cityArr.length < 1 || cityArr == undefined) {
-        errorText.style.display = "block";
-        errorText.textContent = "Invalide city name :/";
-      } else {
-        citySelect.classList.remove("hide");
-        document.querySelector(".error").style.display = "none";
+    }
+    cityArr = await res.json();
 
-        //creating select list
-        const options = cityArr.map((i) => {
-          let cityOption = document.createElement("option");
-          cityOption.textContent = i.display_name;
-          cityOption.value = i.place_id;
-          return cityOption;
-        });
-        const firstOption = document.createElement("option");
-        firstOption.textContent = "choose your option";
-        firstOption.value = "disabled";
-        citySelect.append(firstOption, ...options);
-        firstOption.disabled = true;
-      }
-    })
-    .catch((error) => {
+    if (cityArr.length < 1 || cityArr == undefined) {
       errorText.style.display = "block";
-      errorText.textContent = "No server connection :/ ";
-      console.error(error);
-    });
+      errorText.textContent = "Invalide city name :/";
+    } else {
+      citySelect.classList.remove("hide");
+      document.querySelector(".error").style.display = "none";
 
-  console.log();
+      //creating select list
+      const options = cityArr.map((i) => {
+        let cityOption = document.createElement("option");
+        cityOption.textContent = i.display_name;
+        cityOption.value = i.place_id;
+        return cityOption;
+      });
+      const firstOption = document.createElement("option");
+      firstOption.textContent = "choose your option";
+      firstOption.value = "disabled";
+      citySelect.append(firstOption, ...options);
+      firstOption.disabled = true;
+    }
+  } catch (error) {
+    errorText.style.display = "block";
+    errorText.textContent = "No server connection :/ ";
+    console.log(error.message);
+  }
 }
 
 searchBtn.addEventListener("click", () => {
@@ -80,29 +75,27 @@ async function getWeather(value) {
   let newCity = cityArr.find((i) => i.place_id == value);
 
   //get api
-  await fetch(
-    apiUrlWeather + `lat=${newCity.lat}&lon=${newCity.lon}&appid=${apiKey}`
-  )
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      }
-    })
-    .then((resJson) => {
-      metricObj.currentWeatherData = resJson;
-      document.querySelector(".wether_wrap").style.display = "block";
 
-      impire();
-      getCurrentWeatherData();
-    })
-    .catch((err) => {
-      errorText.style.display = "block";
-      errorText.textContent = "No server connection :/ ";
-      console.error(err);
-    });
+  try {
+    const res = await fetch(
+      apiWeatherUrl + `lat=${newCity.lat}&lon=${newCity.lon}&appid=${apiKey}`
+    );
+    if (res.status != 200) {
+      throw new Error("Something went wrong");
+    }
+    metricObj.currentWeatherData = await res.json();
+    document.querySelector(".wether_wrap").style.display = "block";
+
+    changeMetricSystem();
+    renderCurrentWeather();
+  } catch (error) {
+    errorText.style.display = "block";
+    errorText.textContent = "No server connection :/ ";
+    console.log(error);
+  }
 }
 
-function getCurrentWeatherData() {
+function renderCurrentWeather() {
   document.querySelector(".city").innerHTML = metricObj.currentWeatherData.name;
 
   document.querySelector(".temp").innerHTML = metricObj.temper;
@@ -116,33 +109,34 @@ function getCurrentWeatherData() {
 citySelect.addEventListener("change", (event) =>
   getWeather(event.target.value)
 );
-tempF.addEventListener("click", () => {
+temperatureFarengate.addEventListener("click", () => {
   metricObj.isMetric = false;
-  impire();
-  getCurrentWeatherData();
+  changeMetricSystem();
+  renderCurrentWeather();
 });
-tempC.addEventListener("click", () => {
+temperatureCelcium.addEventListener("click", () => {
   metricObj.isMetric = true;
-  impire();
-  getCurrentWeatherData();
+  changeMetricSystem();
+  renderCurrentWeather();
 });
 
-function impire() {
+//change metric system to the US system
+function changeMetricSystem() {
   if (!metricObj.isMetric) {
-    tempF.classList.remove("nonFocus");
-    tempF.classList.add("inFocus");
-    tempC.classList.remove("inFocus");
-    tempC.classList.add("nonFocus");
+    temperatureFarengate.classList.remove("nonFocus");
+    temperatureFarengate.classList.add("inFocus");
+    temperatureCelcium.classList.remove("inFocus");
+    temperatureCelcium.classList.add("nonFocus");
     metricObj.temper = Math.round(
       Math.round(metricObj.currentWeatherData.main.temp * 1.8 - 459.67)
     );
     metricObj.speed = metricObj.currentWeatherData.wind.speed.toFixed(2);
     metricObj.speedSymble = "mph";
   } else {
-    tempC.classList.remove("nonFocus");
-    tempC.classList.add("inFocus");
-    tempF.classList.remove("inFocus");
-    tempF.classList.add("nonFocus");
+    temperatureCelcium.classList.remove("nonFocus");
+    temperatureCelcium.classList.add("inFocus");
+    temperatureFarengate.classList.remove("inFocus");
+    temperatureFarengate.classList.add("nonFocus");
     metricObj.temper = Math.round(
       Math.round(metricObj.currentWeatherData.main.temp - 273.15)
     );
